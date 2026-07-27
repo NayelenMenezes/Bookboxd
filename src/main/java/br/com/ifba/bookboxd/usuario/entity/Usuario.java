@@ -45,6 +45,8 @@ public class Usuario extends PersistenceEntity{
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ListaLeitura> listas = new ArrayList<>();
     
+    @Column(nullable = false)
+    private boolean administrador = false;
     
     //confere se a senha e o email bate com os dados do usuário
     public boolean autenticar(String email, String senha) {

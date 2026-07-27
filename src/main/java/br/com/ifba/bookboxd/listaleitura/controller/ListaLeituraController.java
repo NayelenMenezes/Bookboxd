@@ -112,4 +112,15 @@ public class ListaLeituraController implements ListaLeituraIController{
             throw e;
         }
     }
+
+    @Override
+    public ListaLeitura copiarLista(Long listaOriginalId, Long novoUsuarioId, String novoNome) {
+        try {
+            log.info("Controller: copiando lista ID: {}", listaOriginalId);
+            return listaLeituraService.copiarLista(listaOriginalId, novoUsuarioId, novoNome);
+        } catch (RuntimeException e) {
+            log.error("Controller: erro ao copiar lista id {} - {}", listaOriginalId, e.getMessage());
+            throw e;
+        }
+    }
 }

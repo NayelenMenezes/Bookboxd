@@ -97,6 +97,7 @@ public class ComentariosDialog extends javax.swing.JDialog {
         jScrollPane3 = new javax.swing.JScrollPane();
         txtAvaliacaoResumo = new javax.swing.JTextArea();
         btnEditar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -141,44 +142,53 @@ public class ComentariosDialog extends javax.swing.JDialog {
         btnEditar.setText("EDITAR");
         btnEditar.addActionListener(this::btnEditarActionPerformed);
 
+        jLabel1.setFont(new java.awt.Font("Myanmar Text", 1, 12)); // NOI18N
+        jLabel1.setText("Escreva seu comentário:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(btnFechar)
+                        .addGap(108, 108, 108)
+                        .addComponent(btnEditar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bntEnviar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(btnFechar)
-                .addGap(108, 108, 108)
-                .addComponent(btnEditar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(bntEnviar)
-                .addGap(67, 67, 67))
+                .addGap(15, 15, 15)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
+                .addGap(15, 15, 15)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bntEnviar)
                     .addComponent(btnFechar)
                     .addComponent(btnEditar))
-                .addGap(20, 20, 20))
+                .addContainerGap())
         );
 
         pack();
@@ -207,7 +217,7 @@ public class ComentariosDialog extends javax.swing.JDialog {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int linha = tblComentarios.getSelectedRow();
         if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um comentário para editar.",
+            JOptionPane.showMessageDialog(this, "Selecione um comentário primeiro.",
                     "Nenhum comentário selecionado", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -218,22 +228,39 @@ public class ComentariosDialog extends javax.swing.JDialog {
         String textoAtual = (String) modelo.getValueAt(linha, 3);
 
         if (!autorDoComentarioId.equals(usuarioLogadoId)) {
-            JOptionPane.showMessageDialog(this, "Você só pode editar os seus próprios comentários.",
+            JOptionPane.showMessageDialog(this, "Você só pode editar ou excluir os seus próprios comentários.",
                     "Ação não permitida", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         String novoTexto = editarTextoDialog.mostrarParaEditar(this, "Editar Comentário", textoAtual);
-        if (novoTexto == null) return;
 
-        try {
-            comentarioController.editarTexto(comentarioId, novoTexto);
-            JOptionPane.showMessageDialog(this, "Comentário atualizado com sucesso!",
-                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            carregarComentarios();
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao editar", JOptionPane.ERROR_MESSAGE);
+        switch (editarTextoDialog.getAcaoEscolhida()) {
+            case SALVAR -> {
+                try {
+                    comentarioController.editarTexto(comentarioId, novoTexto);
+                    JOptionPane.showMessageDialog(this, "Comentário atualizado com sucesso!",
+                            "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    carregarComentarios();
+                } catch (RuntimeException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao editar", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            case DELETAR -> {
+                try {
+                    comentarioController.delete(comentarioId);
+                    JOptionPane.showMessageDialog(this, "Comentário excluído com sucesso!",
+                            "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    carregarComentarios();
+                } catch (RuntimeException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao excluir", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            case CANCELAR -> {
+                
+            }
         }
+
     }//GEN-LAST:event_btnEditarActionPerformed
 
     
@@ -242,6 +269,7 @@ public class ComentariosDialog extends javax.swing.JDialog {
     private javax.swing.JButton bntEnviar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnFechar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

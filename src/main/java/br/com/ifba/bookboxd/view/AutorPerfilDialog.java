@@ -21,6 +21,10 @@ public class AutorPerfilDialog extends javax.swing.JDialog {
         this.autorController = autorController;
         initComponents();
         
+        txtBiografia.setLineWrap(true);
+        txtBiografia.setWrapStyleWord(true);
+        txtBiografia.setEditable(false);
+        
         tblLivrosAutor.getColumnModel().getColumn(0).setMinWidth(0);
         tblLivrosAutor.getColumnModel().getColumn(0).setMaxWidth(0);
         tblLivrosAutor.getColumnModel().getColumn(0).setWidth(0);
@@ -28,8 +32,8 @@ public class AutorPerfilDialog extends javax.swing.JDialog {
 
     public void mostrarPerfil(java.awt.Component parent, Autor autor) {
         lblNomeAutor.setText(autor.getPessoa().getNome());
-        lblNacionalidade.setText("Nacionalidade: " + autor.getNacionalidade());
-        lblBiografia.setText(autor.getPessoa().getBiografia() != null
+        lblNacionalidade.setText(autor.getNacionalidade());
+        txtBiografia.setText(autor.getPessoa().getBiografia() != null
                 ? autor.getPessoa().getBiografia() : "Sem biografia");
 
         preencherTabela(autor.getLivros());
@@ -53,18 +57,19 @@ public class AutorPerfilDialog extends javax.swing.JDialog {
 
         lblNomeAutor = new javax.swing.JLabel();
         lblNacionalidade = new javax.swing.JLabel();
-        lblBiografia = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblLivrosAutor = new javax.swing.JTable();
         btnFecharPerfilAutor = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtBiografia = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        lblNomeAutor.setFont(new java.awt.Font("Serif", 0, 18)); // NOI18N
         lblNomeAutor.setText("nome");
 
+        lblNacionalidade.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
         lblNacionalidade.setText("nacionalidae");
-
-        lblBiografia.setText("bio");
 
         tblLivrosAutor.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -90,11 +95,16 @@ public class AutorPerfilDialog extends javax.swing.JDialog {
         btnFecharPerfilAutor.setText("FECHAR");
         btnFecharPerfilAutor.addActionListener(this::btnFecharPerfilAutorActionPerformed);
 
+        txtBiografia.setColumns(20);
+        txtBiografia.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        txtBiografia.setRows(5);
+        jScrollPane2.setViewportView(txtBiografia);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnFecharPerfilAutor)
@@ -102,25 +112,29 @@ public class AutorPerfilDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(85, 85, 85)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblNacionalidade)
-                    .addComponent(lblNomeAutor)
-                    .addComponent(lblBiografia, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblNacionalidade, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                            .addComponent(lblNomeAutor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(29, 29, 29)
                 .addComponent(lblNomeAutor)
-                .addGap(28, 28, 28)
+                .addGap(22, 22, 22)
                 .addComponent(lblNacionalidade)
-                .addGap(18, 18, 18)
-                .addComponent(lblBiografia, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnFecharPerfilAutor)
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -134,9 +148,10 @@ public class AutorPerfilDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFecharPerfilAutor;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lblBiografia;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblNacionalidade;
     private javax.swing.JLabel lblNomeAutor;
     private javax.swing.JTable tblLivrosAutor;
+    private javax.swing.JTextArea txtBiografia;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,6 +5,8 @@ import br.com.ifba.bookboxd.listaleitra.entity.ListaLeitura;
 import br.com.ifba.bookboxd.livro.entity.Livro;
 import br.com.ifba.bookboxd.listaleitura.repository.ListaLeituraRepository;
 import br.com.ifba.bookboxd.livro.repository.LivroRepository;
+import br.com.ifba.bookboxd.usuario.entity.Usuario;
+import br.com.ifba.bookboxd.usuario.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ListaLeituraService implements ListaLeituraIService{
     private final ListaLeituraRepository listaLeituraRepository;
     private final LivroRepository livroRepository;
+    private final UsuarioRepository usuarioRepository;
     
     private void validarLista(ListaLeitura lista){
         if(lista == null){
@@ -165,4 +168,32 @@ public class ListaLeituraService implements ListaLeituraIService{
         listaLeituraRepository.save(lista);
     }
     
+    @Override
+    @Transactional
+    public ListaLeitura copiarLista(Long listaOriginalId, Long novoUsuarioId, String novoNome) {
+        validarId(listaOriginalId);
+        validarId(novoUsuarioId);
+
+        ListaLeitura listaOriginal = listaLeituraRepository.findById(listaOriginalId)
+                .orElseThrow(() -> new RuntimeException("Lista não encontrada com id: " + listaOriginalId));
+
+        Usuario novoUsuario = usuarioRepository.findById(novoUsuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com id: " + novoUsuarioId));
+
+        String nomeFinal = StringUtil.isEmpty(novoNome)
+                ? "Cópia de " + listaOriginal.getNomeLista()
+                : novoNome;
+
+        ListaLeitura novaLista = new ListaLeitura();
+        novaLista.setNomeLista(nomeFinal);
+        novaLista.setDescricao(listaOriginal.getDescricao());
+        novaLista.setUsuario(novoUsuario);
+
+        for (Livro livro : listaOriginal.getListaLivros()) {
+            novaLista.adicionarLivro(livro);
+        }
+
+        log.info("Copiando lista '{}' para o usuário ID: {}", listaOriginal.getNomeLista(), novoUsuarioId);
+        return listaLeituraRepository.save(novaLista);
+    }
 }

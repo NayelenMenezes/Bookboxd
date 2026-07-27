@@ -155,6 +155,7 @@ public class DashboardView extends javax.swing.JFrame {
     private void btnLivrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLivrosActionPerformed
         LivroView livrosView = SpringContextHolder.getBean(LivroView.class);
         livrosView.configurarUsuario(usuarioLogado.getId());
+        livrosView.configurarPermissoes(usuarioLogado.isAdministrador());
         livrosView.atualizarLista();
         livrosView.setLocationRelativeTo(this);
         livrosView.setVisible(true);
@@ -162,6 +163,7 @@ public class DashboardView extends javax.swing.JFrame {
 
     private void btnAutorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutorActionPerformed
         AutorView autorView = SpringContextHolder.getBean(AutorView.class);
+        autorView.configurarPermissoes(usuarioLogado.isAdministrador());
         autorView.atualizarLista();
         autorView.setLocationRelativeTo(this);
         autorView.setVisible(true);
@@ -169,6 +171,7 @@ public class DashboardView extends javax.swing.JFrame {
 
     private void btnEditorasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditorasActionPerformed
         EditoraView editoraView = SpringContextHolder.getBean(EditoraView.class);
+        editoraView.configurarPermissoes(usuarioLogado.isAdministrador());
         editoraView.atualizarLista();
         editoraView.setLocationRelativeTo(this);
         editoraView.setVisible(true);
@@ -176,6 +179,7 @@ public class DashboardView extends javax.swing.JFrame {
 
     private void btnUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuariosActionPerformed
         UsuarioView usuarioView = SpringContextHolder.getBean(UsuarioView.class);
+        usuarioView.configurarUsuario(usuarioLogado.getId()); 
         usuarioView.atualizarLista();
         usuarioView.setLocationRelativeTo(this);
         usuarioView.setVisible(true);

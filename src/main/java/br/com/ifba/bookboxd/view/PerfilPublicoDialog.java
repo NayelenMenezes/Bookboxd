@@ -6,6 +6,7 @@ import br.com.ifba.bookboxd.listaleitra.entity.ListaLeitura;
 import br.com.ifba.bookboxd.listaleitura.controller.ListaLeituraController;
 import br.com.ifba.bookboxd.usuario.entity.Usuario;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,14 +17,21 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
     
     private final AvaliacaoController avaliacaoController;
     private final ListaLeituraController listaController;
+    private final ComentariosDialog comentariosDialog; 
+    private final VerListaDialog verListaDialog;
+    private Long usuarioLogadoId;
+    private Long usuarioVisitadoId;
     
     @Autowired
-    public PerfilPublicoDialog(AvaliacaoController avaliacaoController, ListaLeituraController listaController) {
+    public PerfilPublicoDialog(AvaliacaoController avaliacaoController, ListaLeituraController listaController,
+                                ComentariosDialog comentariosDialog, VerListaDialog verListaDialog) {
         super();
         setModal(true);
         setTitle("Perfil do Usuário");
         this.avaliacaoController = avaliacaoController;
         this.listaController = listaController;
+        this.comentariosDialog = comentariosDialog;
+        this.verListaDialog = verListaDialog;
         initComponents();
         
         txtBiografia.setLineWrap(true);
@@ -32,20 +40,24 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
         tblAvaliacoesPublicas.getColumnModel().getColumn(0).setMinWidth(0);
         tblAvaliacoesPublicas.getColumnModel().getColumn(0).setMaxWidth(0);
         tblAvaliacoesPublicas.getColumnModel().getColumn(0).setWidth(0);
+        
+        tblAvaliacoesPublicas.getColumnModel().getColumn(4).setMinWidth(0);
+        tblAvaliacoesPublicas.getColumnModel().getColumn(4).setMaxWidth(0);
+        tblAvaliacoesPublicas.getColumnModel().getColumn(4).setWidth(0);
 
         tblListasPublicas.getColumnModel().getColumn(0).setMinWidth(0);
         tblListasPublicas.getColumnModel().getColumn(0).setMaxWidth(0);
         tblListasPublicas.getColumnModel().getColumn(0).setWidth(0);
     }
 
-    public void mostrarPerfil(java.awt.Component parent, Usuario usuario) {
+    public void mostrarPerfil(java.awt.Component parent, Usuario usuario, Long usuarioLogadoId) {
+        this.usuarioLogadoId = usuarioLogadoId;
+        this.usuarioVisitadoId = usuario.getId();
         lblNomeUsuario.setText(usuario.getPessoa().getNome());
         txtBiografia.setText(usuario.getPessoa().getBiografia() != null
                 ? usuario.getPessoa().getBiografia() : "Sem biografia");
-
         carregarAvaliacoes(usuario.getId());
         carregarListas(usuario.getId());
-
         setLocationRelativeTo(parent);
         setVisible(true);
     }
@@ -67,7 +79,8 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
                 a.getId(),
                 a.getLivro().getTitulo(),
                 a.getNota() + " estrelas",
-                a.isContemSpoiler() ? "[CONTÉM SPOILER] " + a.getAvaliacao() : a.getAvaliacao()
+                a.isContemSpoiler() ? "[CONTÉM SPOILER] " + a.getAvaliacao() : a.getAvaliacao(),
+                a.isContemSpoiler()
             });
         }
     }
@@ -80,7 +93,7 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
             preencherTabelaListas(List.of());
         }
     }
-    
+
     private void preencherTabelaListas(List<ListaLeitura> listas) {
         DefaultTableModel modelo = (DefaultTableModel) tblListasPublicas.getModel();
         modelo.setRowCount(0);
@@ -105,9 +118,11 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblAvaliacoesPublicas = new javax.swing.JTable();
+        btnVerDetalhesAvaliacao = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblListasPublicas = new javax.swing.JTable();
+        btnVerLista = new javax.swing.JButton();
         btnVoltar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -126,42 +141,36 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(81, 81, 81)
-                .addComponent(lblNomeUsuario)
-                .addContainerGap(279, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(83, 83, 83)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(83, Short.MAX_VALUE)))
+                    .addComponent(lblNomeUsuario))
+                .addContainerGap(171, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(46, 46, 46)
+                .addGap(57, 57, 57)
                 .addComponent(lblNomeUsuario)
-                .addContainerGap(179, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(102, 102, 102)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(46, Short.MAX_VALUE)))
+                .addGap(60, 60, 60)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("PERFIL", jPanel1);
 
         tblAvaliacoesPublicas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "id", "Livro", "Nota", "Texto"
+                "id", "Livro", "Nota", "Texto", "spoiler"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Long.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -170,17 +179,26 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
         });
         jScrollPane2.setViewportView(tblAvaliacoesPublicas);
 
+        btnVerDetalhesAvaliacao.setText("VER DETALHES");
+        btnVerDetalhesAvaliacao.addActionListener(this::btnVerDetalhesAvaliacaoActionPerformed);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnVerDetalhesAvaliacao, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(btnVerDetalhesAvaliacao)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("AVALIAÇÕES", jPanel2);
@@ -206,15 +224,26 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(tblListasPublicas);
 
+        btnVerLista.setText("VER DETALHES");
+        btnVerLista.addActionListener(this::btnVerListaActionPerformed);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnVerLista, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addComponent(btnVerLista)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("LISTAS", jPanel3);
@@ -226,19 +255,18 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jTabbedPane1)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnVoltar)
-                .addGap(16, 16, 16))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnVoltar)
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addComponent(btnVoltar))
         );
 
         pack();
@@ -248,8 +276,45 @@ public class PerfilPublicoDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
+    private void btnVerDetalhesAvaliacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalhesAvaliacaoActionPerformed
+        int linha = tblAvaliacoesPublicas.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione uma avaliação primeiro.",
+                    "Nenhuma avaliação selecionada", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        DefaultTableModel modelo = (DefaultTableModel) tblAvaliacoesPublicas.getModel();
+        Long avaliacaoId = (Long) modelo.getValueAt(linha, 0);
+        boolean contemSpoiler = (Boolean) modelo.getValueAt(linha, 4);
+
+        if (contemSpoiler) {
+            int confirmacao = JOptionPane.showConfirmDialog(this,
+                    "Esta avaliação contém spoiler. Deseja continuar?", "Aviso de Spoiler",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (confirmacao != JOptionPane.YES_OPTION) return;
+        }
+
+        comentariosDialog.mostrarComentarios(this, avaliacaoId, usuarioLogadoId);
+        carregarAvaliacoes(usuarioVisitadoId);
+    }//GEN-LAST:event_btnVerDetalhesAvaliacaoActionPerformed
+
+    private void btnVerListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerListaActionPerformed
+        int linha = tblListasPublicas.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione uma lista primeiro.",
+                    "Nenhuma lista selecionada", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        DefaultTableModel modelo = (DefaultTableModel) tblListasPublicas.getModel();
+        Long listaId = (Long) modelo.getValueAt(linha, 0);
+
+        verListaDialog.mostrarLista(this, listaId, true, usuarioLogadoId);
+    }//GEN-LAST:event_btnVerListaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnVerDetalhesAvaliacao;
+    private javax.swing.JButton btnVerLista;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

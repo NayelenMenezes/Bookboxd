@@ -16,6 +16,7 @@ public class UsuarioView extends javax.swing.JFrame {
     
     private final UsuarioController usuarioController;
     private final PerfilPublicoDialog perfilPublicoDialog;
+    private Long usuarioLogadoId;
     
     @Autowired
     public UsuarioView(UsuarioController usuarioController, PerfilPublicoDialog perfilPublicoDialog) {
@@ -27,7 +28,11 @@ public class UsuarioView extends javax.swing.JFrame {
         tblUsuarios.getColumnModel().getColumn(0).setMaxWidth(0);
         tblUsuarios.getColumnModel().getColumn(0).setWidth(0);
     }
-
+    
+    public void configurarUsuario(Long usuarioLogadoId) {
+        this.usuarioLogadoId = usuarioLogadoId;
+    }
+    
     public void atualizarLista() {
         txtBuscaUsuario.setText("");
         DefaultTableModel modelo = (DefaultTableModel) tblUsuarios.getModel();
@@ -159,7 +164,7 @@ public class UsuarioView extends javax.swing.JFrame {
 
         try {
             Usuario usuario = usuarioController.findById(id).orElseThrow();
-            perfilPublicoDialog.mostrarPerfil(this, usuario);
+            perfilPublicoDialog.mostrarPerfil(this, usuario, usuarioLogadoId); // usa o campo agora existente
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }

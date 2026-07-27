@@ -28,4 +28,6 @@ public interface ListaLeituraIService {
     void removerLivro(Long listaId, Long livroId);
     
     void esvaziarLista(Long listaId);
+    
+    ListaLeitura copiarLista(Long listaOriginalId, Long novoUsuarioId, String novoNome);
 }

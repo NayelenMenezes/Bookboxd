@@ -444,35 +444,50 @@ public class PerfilView extends javax.swing.JDialog {
     private void btnVerListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerListaActionPerformed
         Long listaId = getListaSelecionadaId();
         if (listaId == null) return;
-        
-        verListaDialog.mostrarLista(this, listaId);
+
+        verListaDialog.mostrarLista(this, listaId, false, usuarioLogado.getId());
         carregarListas();
     }//GEN-LAST:event_btnVerListaActionPerformed
 
     private void btnEditarAvaliacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarAvaliacaoActionPerformed
         int linha = tblAvaliacoes.getSelectedRow();
         if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione uma avaliação para editar.",
+            JOptionPane.showMessageDialog(this, "Selecione uma avaliação primeiro.",
                     "Nenhuma avaliação selecionada", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         DefaultTableModel modelo = (DefaultTableModel) tblAvaliacoes.getModel();
         Long avaliacaoId = (Long) modelo.getValueAt(linha, 0);
-        String textoAtual = (String) modelo.getValueAt(linha, 3); 
+        String textoAtual = (String) modelo.getValueAt(linha, 3);
 
         String novoTexto = editarTextoDialog.mostrarParaEditar(this, "Editar Avaliação", textoAtual);
-        if (novoTexto == null) return;
 
-        try {
-            avaliacaoController.editarTexto(avaliacaoId, novoTexto);
-            JOptionPane.showMessageDialog(this, "Avaliação atualizada com sucesso!",
-                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            carregarAvaliacoes(); 
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao editar", JOptionPane.ERROR_MESSAGE);
+        switch (editarTextoDialog.getAcaoEscolhida()) {
+            case SALVAR -> {
+                try {
+                    avaliacaoController.editarTexto(avaliacaoId, novoTexto);
+                    JOptionPane.showMessageDialog(this, "Avaliação atualizada com sucesso!",
+                            "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    carregarAvaliacoes();
+                } catch (RuntimeException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao editar", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            case DELETAR -> {
+                try {
+                    avaliacaoController.delete(avaliacaoId);
+                    JOptionPane.showMessageDialog(this, "Avaliação excluída com sucesso!",
+                            "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    carregarAvaliacoes();
+                } catch (RuntimeException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao excluir", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            case CANCELAR -> {
+                
+            }
         }
-
     }//GEN-LAST:event_btnEditarAvaliacaoActionPerformed
 
     private void btnAlterarSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarSenhaActionPerformed

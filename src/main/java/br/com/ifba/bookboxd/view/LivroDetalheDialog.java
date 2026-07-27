@@ -40,14 +40,18 @@ public class LivroDetalheDialog extends javax.swing.JDialog {
         tblAvaliacoesLivro.getColumnModel().getColumn(0).setMinWidth(0);
         tblAvaliacoesLivro.getColumnModel().getColumn(0).setMaxWidth(0);
         tblAvaliacoesLivro.getColumnModel().getColumn(0).setWidth(0);
+        
+        tblAvaliacoesLivro.getColumnModel().getColumn(5).setMinWidth(0);
+        tblAvaliacoesLivro.getColumnModel().getColumn(5).setMaxWidth(0);
+        tblAvaliacoesLivro.getColumnModel().getColumn(5).setWidth(0);
     }
 
     public void mostrarDetalhes(java.awt.Component parent, Livro livro, Long usuarioLogadoId) {
         this.livroAtual = livro;
         this.usuarioLogadoId = usuarioLogadoId;
 
-        lblTitulo.setText(livro.getTitulo());
-        lblAutor.setText("Autor: " + (livro.getAutor() != null ? livro.getAutor().getPessoa().getNome() : "Desconhecido"));
+        lblTitulo.setText("Título: " + livro.getTitulo());
+        lblAutor.setText("Autor(a): " + (livro.getAutor() != null ? livro.getAutor().getPessoa().getNome() : "Desconhecido"));
         lblEditora.setText("Editora: " + (livro.getEditora() != null ? livro.getEditora().getNome() : "Sem editora"));
         lblNotaMedia.setText(String.format("Nota média: %.1f / 5", livro.calcularMediaAvaliacao()));
         txtSinopseLivro.setText(livro.getSinopse() != null ? livro.getSinopse() : "Sem sinopse");
@@ -76,7 +80,8 @@ public class LivroDetalheDialog extends javax.swing.JDialog {
                 a.getUsuario().getPessoa().getNome(),
                 a.getNota() + " estrelas",
                 texto,
-                a.getComentarios().size() + " comentário(s)"
+                a.getComentarios().size() + " comentário(s)",
+                a.isContemSpoiler()
             });
         }
     }
@@ -101,17 +106,17 @@ public class LivroDetalheDialog extends javax.swing.JDialog {
 
         tblAvaliacoesLivro.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "id", "Usuario", "Nota", "Texto", "Qtd. Comentarios"
+                "id", "Usuario", "Nota", "Texto", "Qtd. Comentarios", "spoiler"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.Long.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Boolean.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -209,7 +214,7 @@ public class LivroDetalheDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btnAvaliarActionPerformed
 
     private void btnVerComentariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerComentariosActionPerformed
-        int linha = tblAvaliacoesLivro.getSelectedRow();
+         int linha = tblAvaliacoesLivro.getSelectedRow();
         if (linha == -1) {
             JOptionPane.showMessageDialog(this, "Selecione uma avaliação primeiro.",
                     "Nenhuma avaliação selecionada", JOptionPane.WARNING_MESSAGE);
@@ -217,6 +222,14 @@ public class LivroDetalheDialog extends javax.swing.JDialog {
         }
         DefaultTableModel modelo = (DefaultTableModel) tblAvaliacoesLivro.getModel();
         Long avaliacaoId = (Long) modelo.getValueAt(linha, 0);
+        boolean contemSpoiler = (Boolean) modelo.getValueAt(linha, 5);
+
+        if (contemSpoiler) {
+            int confirmacao = JOptionPane.showConfirmDialog(this,
+                    "Esta avaliação contém spoiler. Deseja continuar?", "Aviso de Spoiler",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (confirmacao != JOptionPane.YES_OPTION) return;
+        }
 
         comentariosDialog.mostrarComentarios(this, avaliacaoId, usuarioLogadoId);
         carregarAvaliacoes();
